@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import './GuestCount.css';
 
-type GuestCountProps = {
+interface IGuestCountProps {
     guesses: number
 }
 
-const GuestCount = ({guesses} : GuestCountProps) => (
+const GuestCount: FunctionComponent<IGuestCountProps> = ({guesses}) => (
     <div className="guesses">
         {guesses}
     </div>

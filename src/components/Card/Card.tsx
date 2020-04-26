@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import './Card.css';
 
-type CardProps = {
-    card: string,
-    feedback: string
+interface ICardProps {
+    card: any,
+    feedback: string,
+    onClick: any
 }
 
 const HIDDEN_SYMBOL = '❓';
 
-const Card = ({card, feedback} : CardProps) => (
-    <div className={`card ${feedback}`}>
+const Card: FunctionComponent<ICardProps> = ({card, feedback, onClick}) => (
+    <div className={`card ${feedback}`} onClick={() => onClick(card)}>
         <span className="symbol">
             {feedback === 'hidden' ? HIDDEN_SYMBOL : card}
         </span>
