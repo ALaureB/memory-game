@@ -5,13 +5,15 @@ import './App.css';
 
 import Card from '../../components/Card/Card';
 import GuessCount from '../../components/GuestCount/GuestCount';
-import HallOfFame, { FAKE_HOF } from '../../components/HallOfFame/HallOfFame';
+import HallOfFame, { FAKE_HOF, IFakeHof } from '../../components/HallOfFame/HallOfFame';
+import ScoreInput from '../../components/ScoreInput/ScoreInput';
 
 export interface IAppState {
   cards: any,
   currentPair: number[],
   guesses: number,
-  matchedCardIndices: number[]
+  matchedCardIndices: number[],
+  hallOfFame: IFakeHof[]
 }
 
 const SIDE = 6;
@@ -24,6 +26,7 @@ class App extends Component<{}, IAppState> {
     currentPair: [],
     guesses: 0,
     matchedCardIndices: [],
+    hallOfFame: []
   }
 
   generateCards()  {
@@ -70,23 +73,29 @@ class App extends Component<{}, IAppState> {
 
   handleNewPairClosedBy(index: number)
   {
-    const { cards, currentPair, guesses, matchedCardIndices } = this.state
+    const { cards, currentPair, guesses, matchedCardIndices } = this.state;
 
-    const newPair = [currentPair[0], index]
-    const newGuesses = guesses + 1
-    const matched = cards[newPair[0]] === cards[newPair[1]]
-    this.setState({ currentPair: newPair, guesses: newGuesses })
+    const newPair = [currentPair[0], index];
+    const newGuesses = guesses + 1;
+    const matched = cards[newPair[0]] === cards[newPair[1]];
+    this.setState({ currentPair: newPair, guesses: newGuesses });
+
     if (matched) {
       this.setState({ matchedCardIndices: [...matchedCardIndices, ...newPair] })
     }
-    setTimeout(() => this.setState({ currentPair: [] }), VISUAL_PAUSE_MSECS)
+    setTimeout(() => this.setState({ currentPair: [] }), VISUAL_PAUSE_MSECS);
 
+  }
+
+  // Arrow fx for binding
+  displayHallOfFame = (hallOfFame: any) => {
+    this.setState({ hallOfFame });
   }
   
   render() {    
-    const { cards, guesses, matchedCardIndices } = this.state;
+    const { cards, guesses, matchedCardIndices, hallOfFame } = this.state;
     const won = matchedCardIndices.length === cards.length;
-
+    
     return (
       <div className="memory">
         <GuessCount guesses={guesses} />
@@ -98,7 +107,15 @@ class App extends Component<{}, IAppState> {
             key={index}
             onClick={this.handleCardClick} />
         ))}
-        <HallOfFame entries={FAKE_HOF} />
+
+        {won && 
+          (hallOfFame ? (
+            <HallOfFame entries={hallOfFame} />
+          ) : (
+            <ScoreInput guesses={guesses} onStored={this.displayHallOfFame} />
+          ))
+        
+        }
       </div>
     )
   }

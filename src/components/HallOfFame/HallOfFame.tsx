@@ -27,9 +27,9 @@ const HallOfFame: FunctionComponent<IHallOfFameProps> = ({entries}) => (
 export default HallOfFame;
 
 export interface IFakeHof {
-  id: number;
+  id?: number;
   guesses: number;
-  date: string;
+  date?: string;
   player: string;
 }
 
@@ -39,3 +39,30 @@ export const FAKE_HOF: IFakeHof[]  = [
   { id: 1, guesses: 31, date: '06/10/2017', player: 'Louisa' },
   { id: 0, guesses: 48, date: '14/10/2017', player: 'Marc' },
 ];
+
+const HOF_KEY = '::Memory::HallofFame';
+const HOF_MAX_SIZE = 10;
+
+export function saveHOFEntry(entry: IFakeHof, onStored: any) {
+  entry.date = new Date().toLocaleDateString();
+  entry.id = Date.now();
+
+  const entries = JSON.parse(localStorage.getItem(HOF_KEY) || '[]');
+  const insertionPoint = entries.findIndex(
+    ({ guesses }: { guesses: number }) => {
+      return guesses >= entry.guesses;
+    }
+  )
+
+  if (insertionPoint === -1) {
+    entries.push(entry)
+  } else {
+    entries.splice(insertionPoint, 0, entry)
+  }
+  if (entries.length > HOF_MAX_SIZE) {
+    entries.splice(HOF_MAX_SIZE, entries.length)
+  }
+
+  localStorage.setItem(HOF_KEY, JSON.stringify(entries))
+  onStored(entries)
+}
